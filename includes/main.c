@@ -104,6 +104,29 @@ int main (void)
     Stop();
 }
 
+
+//***************************************************** Insert code here******************************************************************/void Commands()
+void Commands()
+{
+switch (command)
+{
+
+case 0: 
+turn_angle = 0;   turn_direction = 0;  speed = 200;
+drive_distance = 5; turning = 0; break; 
+case 1: 
+turn_direction = RadCW;  speed = 0;
+turn_angle = 180; drive_distance = 0; turning = 1; break; 
+case 2: 
+turn_angle = 0;   turn_direction = 0;  speed = 200;
+drive_distance = 5; turning = 0; break; 
+default:
+command = -1;
+break;}
+}
+
+//***************************************************** Insert code here******************************************************************/
+
 // Serial receive interrupt to store sensor values
 SIGNAL(SIG_USART_RECV)
 {
@@ -302,74 +325,6 @@ void Drive_Wheels(int16_t velocity, int16_t radius)
   ByteTx((uint8_t)(radius & 0x00FF));
 }
 
-void Commands()
-{
-	switch (command)
-	{
-		case 0 :
-			turn_angle 		= 0;
-			turn_direction	= 0;
-			drive_distance 	= 100;
-			speed		 	= -200;
-			turning 		= 0;
-			break;
-		case 1 :
-			turn_angle 		= 90;
-			turn_direction	= RadCW;
-			drive_distance 	= 0;
-			speed		 	= 0;
-			turning 		= 1;
-			break;
-		case 2 :
-			turn_angle 		= 0;
-			turn_direction	= 0;
-			drive_distance 	= 100;
-			speed		 	= -200;
-			turning 		= 0;
-			break;
-		case 3 :
-			turn_angle 		= 90;
-			turn_direction	= RadCW;
-			drive_distance 	= 0;
-			speed		 	= 0;
-			turning 		= 1;
-			break;
-		case 4 :
-			turn_angle 		= 0;
-			turn_direction	= 0;
-			drive_distance 	= 100;
-			speed		 	= -200;
-			turning 		= 0;
-			break;
-		case 5 :
-			turn_angle 		= 90;
-			turn_direction	= RadCW;
-			drive_distance 	= 0;
-			speed		 	= 0;
-			turning 		= 1;
-			break;
-		case 6 :
-			turn_angle 		= 0;
-			turn_direction	= 0;
-			drive_distance 	= 100;
-			speed		 	= -200;
-			turning 		= 0;
-			break;
-		case 7 :
-			turn_angle 		= 90;
-			turn_direction	= RadCW;
-			drive_distance 	= 0;
-			speed		 	= 0;
-			turning 		= 1;
-			break;
-			
-		default:
-			// End the robots run
-			command = -1;
-			break;
-	}
-}
-
 // Stop the robot from driving
 void Stop()
 {
@@ -403,42 +358,61 @@ void FinishedCommand()
 
 // Manage the moving of the robot
 void Drive()
+ 
 {
-	// If the robot is turning, manage the turn
-	if(turning)
+// If the robot is turning, manage the turn
+ 
+if(turning)
+ 
+{
+volatile int16_t turnedangle = angle ;
+ 
+	if (angle < 0)
 	{
-		if(turn_direction)
-		{
-		  if(angle > turn_angle)
-			FinishedCommand();
-			
-		  Drive_Wheels(200, RadCCW);
-		}
-		else
-		{
-		  if((-angle) > turn_angle)
-			FinishedCommand();
-			
-		  Drive_Wheels(200, RadCW);
-		}
+		turnedangle = -angle;
 	}
-	else
+ 
+	if(turn_direction == RadCW)
 	{
-		// Drive Forward
-		if(speed > 0)
-		{
-			if(distance > drive_distance)
-				FinishedCommand();
-				
-            Drive_Wheels(speed, RadStraight);
-		}
-		// Drive Backwards
-		else
-		{
-			if((-distance) > drive_distance)
-				FinishedCommand();
-				
-            Drive_Wheels(speed, RadStraight);
-		}
+		Drive_Wheels(200, RadCW);
 	}
+ 
+	else if(turn_direction == RadCCW)
+	{
+		Drive_Wheels(200, RadCCW);
+	}                       
+
+	else 
+	{
+	LEDBothOn;
+	}
+ 
+	if(turnedangle > turn_angle)
+	{
+		FinishedCommand();
+	}
+ }
+ 
+else
+  {
+ // Drive Forward
+ if(speed > 0)
+ {
+	if(distance > drive_distance)
+	FinishedCommand();
+	Drive_Wheels(speed, RadStraight);
+ }
+ 
+// Drive Backwards
+ 
+ else
+ {
+if((-distance) > drive_distance)
+  FinishedCommand();
+Drive_Wheels(speed, RadStraight);
 }
+ }
+ 
+}
+
+
